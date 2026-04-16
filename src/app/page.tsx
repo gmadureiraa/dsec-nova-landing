@@ -1,65 +1,346 @@
+"use client";
+
+import { useState, useRef } from "react";
 import Image from "next/image";
 
+/* ─── DATA ─── */
+const DAYS = [
+  {
+    num: "01",
+    title: "O motivo real pelo qual governos querem controlar seu dinheiro digital",
+    desc: "Inflação programada, vigilância financeira e o que o Plano Collor ensina sobre CBDCs.",
+    img: "/days/day1.jpg",
+  },
+  {
+    num: "02",
+    title: "O evento de 1971 que transformou seu salário em papel depreciável",
+    desc: "O que mudou quando Nixon tirou o dólar do ouro — e por que Bitcoin é a resposta.",
+    img: "/days/day2.jpg",
+  },
+  {
+    num: "03",
+    title: "Por que o Bitcoin que está na sua exchange não é seu",
+    desc: "Mt. Gox, FTX, Celsius — o padrão que se repete. E o método P2P que elimina o risco.",
+    img: "/days/day3.jpg",
+  },
+  {
+    num: "04",
+    title: "O ataque de US$ 284 milhões que começou com um telefonema",
+    desc: "Phishing, wrench attacks e engenharia social. Como criar um setup à prova de tudo.",
+    img: "/days/day4.jpg",
+  },
+  {
+    num: "05",
+    title: "O setup que cabe no bolso e não existe pra nenhum hacker do mundo",
+    desc: "Air-gapped, open-source, backup em metal. Passo a passo do seu cofre pessoal.",
+    img: "/days/day5.jpg",
+  },
+];
+
+const FAQS = [
+  {
+    q: "Já comprei na Binance com KYC. Ainda faz sentido pra mim?",
+    a: "Faz mais sentido ainda. Seus dados já existem num banco de dados. O curso ensina como a partir de agora suas próximas compras não criem mais registros — e como proteger o que você já tem.",
+  },
+  {
+    q: "É gratuito mesmo? Qual a pegadinha?",
+    a: "Nenhuma. A DSEC Labs fabrica hardware de segurança Bitcoin. Quanto mais gente entender self-custody, mais gente precisa de cofres bons. A educação é o marketing.",
+  },
+  {
+    q: "Vou precisar comprar algum equipamento?",
+    a: "Não. O curso ensina conceitos que funcionam com qualquer hardware wallet. Se depois quiser conhecer o ColdKit, vai ser uma escolha sua — não uma obrigação.",
+  },
+  {
+    q: "Tenho medo de perder acesso ao meu Bitcoin com self-custody.",
+    a: "Esse medo é normal e saudável. O dia 4 do curso é dedicado inteiramente a isso: como fazer backup à prova de incêndio, enchente e esquecimento.",
+  },
+  {
+    q: "Como sei que meu e-mail não vai ser vendido?",
+    a: "Somos uma empresa de segurança Bitcoin. Se vazássemos dados de clientes, não teríamos empresa. Privacidade é o nosso produto.",
+  },
+];
+
+/* ─── EMAIL FORM ─── */
+function EmailForm() {
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading">("idle");
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setStatus("loading");
+
+    const hiddenForm = document.createElement("form");
+    hiddenForm.method = "POST";
+    hiddenForm.action = "https://app.rdstation.com.br/api/1.2/conversions";
+    hiddenForm.target = "rd-iframe-nova";
+    hiddenForm.style.display = "none";
+
+    const fields: Record<string, string> = {
+      token_rdstation: "null",
+      identificador: "forms-captura-leads-x-c92b969c120bb9b7290a",
+      email,
+      celular: phone,
+      c_utmz: "",
+      traffic_source: document.referrer || "",
+    };
+
+    Object.entries(fields).forEach(([key, value]) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = value;
+      hiddenForm.appendChild(input);
+    });
+
+    document.body.appendChild(hiddenForm);
+    hiddenForm.submit();
+    document.body.removeChild(hiddenForm);
+
+    setTimeout(() => {
+      window.location.href = "/obrigado";
+    }, 800);
+  };
+
+  return (
+    <>
+      <iframe name="rd-iframe-nova" ref={iframeRef} className="hidden" />
+      <form onSubmit={handleSubmit} className="space-y-3 w-full">
+        <div>
+          <label className="block text-xs text-[var(--text-muted)] mb-1.5">E-mail</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="+60.000"
+            required
+            disabled={status === "loading"}
+            className="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-sm text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--orange)] transition-colors disabled:opacity-50"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-[var(--text-muted)] mb-1.5">WhatsApp</label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+55 021 987899372"
+            className="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-sm text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--orange)] transition-colors"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="w-full py-3.5 bg-[var(--orange)] text-black font-bold rounded-lg hover:brightness-110 transition-all cursor-pointer disabled:opacity-70 flex items-center justify-center gap-2"
+        >
+          {status === "loading" ? "Enviando..." : "Enviar"}
+          {status !== "loading" && (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          )}
+        </button>
+      </form>
+    </>
+  );
+}
+
+/* ─── FAQ ITEM ─── */
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b border-[var(--border)]">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between py-6 text-left group cursor-pointer"
+      >
+        <span className="text-[15px] font-semibold text-white group-hover:text-[var(--orange)] transition-colors pr-6">
+          {q}
+        </span>
+        <span className={`text-[var(--text-muted)] text-xl shrink-0 transition-transform duration-200 ${open ? "rotate-45" : ""}`}>
+          +
+        </span>
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-48 pb-6" : "max-h-0"}`}>
+        <p className="text-sm text-[var(--text-muted)] leading-relaxed">{a}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ─── MAIN PAGE ─── */
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
+    <main className="min-h-screen bg-[var(--bg)]">
+
+      {/* ═══ NAV ═══ */}
+      <nav className="fixed top-0 inset-x-0 z-50 bg-[var(--bg)]/80 backdrop-blur-xl border-b border-[var(--border)]/50">
+        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 bg-[var(--orange)] rounded-sm flex items-center justify-center">
+              <span className="text-[10px] font-black text-black">D</span>
+            </div>
+            <span className="text-sm font-bold tracking-wide">SEC LABS</span>
+          </div>
+          <div className="hidden md:flex items-center gap-6 text-[13px] text-[var(--text-muted)]">
+            <a href="https://youtube.com/@dseclabs" target="_blank" rel="noopener" className="hover:text-white transition-colors">Youtube</a>
+            <a href="https://instagram.com/dseclab.io" target="_blank" rel="noopener" className="hover:text-white transition-colors">Instagram</a>
+            <a href="https://x.com/alfredp2p" target="_blank" rel="noopener" className="hover:text-white transition-colors">Alfredp2p</a>
+            <a href="https://x.com/alfredp2p" target="_blank" rel="noopener" className="hover:text-white transition-colors">X</a>
+            <a href="https://tiktok.com/@dseclab" target="_blank" rel="noopener" className="hover:text-white transition-colors">Tiktok</a>
+            <a href="https://t.me/alfredp2p" target="_blank" rel="noopener" className="hover:text-white transition-colors">Telegram</a>
+          </div>
+          <a href="#start" className="text-xs font-semibold border border-[var(--orange)] text-[var(--orange)] px-4 py-2 rounded-full hover:bg-[var(--orange)] hover:text-black transition-all">
+            Quero o Curso
           </a>
         </div>
-      </main>
-    </div>
+      </nav>
+
+      {/* ═══ HERO ═══ */}
+      <section className="relative min-h-screen pt-14 overflow-hidden" id="start">
+        <div className="absolute inset-0 z-0">
+          <Image src="/assets/hero-bg.png" alt="" fill className="object-cover opacity-40" priority />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--bg)]/30 to-[var(--bg)]" />
+        </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="animate-fade-up">
+              <h1 className="text-3xl md:text-[2.8rem] leading-[1.12] font-bold mb-4">
+                <span className="text-[var(--orange)]">Comprar Bitcoin é fácil...</span>
+                <br />
+                <span className="text-white">Difícil</span>{" "}
+                <span className="text-white font-normal">é fazer com</span>
+                <br />
+                <span className="text-white font-normal">privacidade e controle</span>
+              </h1>
+              <p className="text-sm text-[var(--text-muted)] leading-relaxed max-w-md mt-4 animate-fade-up delay-1">
+                <span className="text-[var(--orange)] font-semibold">Apenas 5 dias,</span>{" "}
+                você sai do zero e aprende a comprar, guardar e usar Bitcoin com autonomia total.
+              </p>
+            </div>
+            <div className="relative animate-fade-up delay-2">
+              <div className="relative rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-6 md:p-8 overflow-hidden">
+                <div className="absolute inset-0 opacity-30">
+                  <Image src="/assets/form-bg.png" alt="" fill className="object-cover" />
+                </div>
+                <div className="relative z-10">
+                  <EmailForm />
+                </div>
+                <div className="absolute -bottom-2 -right-4 w-[120px] md:w-[140px] z-20">
+                  <Image src="/assets/alfred.png" alt="Alfred" width={140} height={175} className="drop-shadow-2xl" unoptimized />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="relative z-10 border-t border-[var(--border)]/50 bg-[var(--bg)]/80 backdrop-blur-sm">
+          <div className="max-w-6xl mx-auto px-6 py-5 flex flex-wrap items-center justify-between gap-4 text-sm">
+            <div>
+              <span className="font-bold text-white uppercase tracking-wide">100% GRATUITO</span>
+              <span className="text-[var(--text-muted)] ml-3">Curso focado em pontos não óbvios</span>
+            </div>
+            <div>
+              <span className="font-bold text-white uppercase tracking-wide">5 DIAS</span>
+              <span className="text-[var(--text-muted)] ml-3">Curta duração, alta carga de conhecimento</span>
+            </div>
+            <div>
+              <span className="font-bold text-white uppercase tracking-wide italic">CADASTRO RÁPIDO</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ O QUE VOCÊ VAI RECEBER ═══ */}
+      <section className="py-20 md:py-28">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+            <div>
+              <p className="text-xs font-mono text-[var(--text-muted)] tracking-[0.2em] uppercase mb-4">O QUE VOCÊ VAI RECEBER</p>
+              <h2 className="text-2xl md:text-[2.2rem] font-bold leading-tight">
+                5 dias.<br />5 aulas que mudam como<br />você protege seu dinheiro.
+              </h2>
+            </div>
+            <a href="#start" className="inline-flex items-center gap-2 px-6 py-3 border border-[var(--orange)] text-[var(--orange)] rounded-full text-sm font-semibold hover:bg-[var(--orange)] hover:text-black transition-all shrink-0">
+              Quero o primeiro dia
+            </a>
+          </div>
+          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-2 px-2 no-scrollbar">
+            {DAYS.map((day) => (
+              <div key={day.num} className="snap-start shrink-0 w-[240px] md:w-[260px] rounded-xl bg-[var(--bg-card)] border border-[var(--border)]/50 overflow-hidden group">
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <Image src={day.img} alt={`Dia ${day.num}`} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
+                  <span className="absolute top-3 left-3 text-[9px] font-mono tracking-widest uppercase text-[var(--orange)] bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-full border border-[var(--orange)]/30">DIA {day.num}</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-card)] via-transparent to-transparent" />
+                </div>
+                <div className="p-4">
+                  <h3 className="text-[13px] font-semibold leading-snug mb-2 text-white">{day.title}</h3>
+                  <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">{day.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ POR QUE SE IMPORTAR ═══ */}
+      <section className="py-20 md:py-28">
+        <div className="max-w-6xl mx-auto px-6">
+          <p className="text-center text-xs font-mono text-[var(--text-muted)] tracking-[0.2em] uppercase mb-12">POR QUE VOCÊ DEVERIA SE IMPORTAR AGORA</p>
+          <div className="grid md:grid-cols-3 gap-5">
+            <div className="rounded-2xl p-6 md:p-8 border border-[var(--gold)]/30" style={{ background: "linear-gradient(145deg, #6b4f1d 0%, #3d2e11 100%)" }}>
+              <p className="text-[3rem] md:text-[3.5rem] font-bold leading-none text-white">270<span className="text-2xl">mil</span></p>
+              <p className="text-sm font-semibold text-white mt-1 mb-4">Clientes com dados vazados</p>
+              <p className="text-[13px] text-white/70 leading-relaxed mb-4">Uma fabricante de hardware wallets expôs nome, endereço e patrimônio de 270 mil usuários, abrindo espaço para phishing direcionado e invasões físicas.</p>
+              <p className="text-[13px] text-[var(--orange)] font-semibold leading-relaxed">No curso, <span className="underline">você aprende a operar sem vincular sua identidade às transações.</span></p>
+            </div>
+            <div className="rounded-2xl p-6 md:p-8 bg-[var(--bg-card)] border border-[var(--border)]">
+              <p className="text-[3rem] md:text-[3.5rem] font-bold leading-none text-white">$8B</p>
+              <p className="text-sm font-semibold text-white mt-1 mb-4">Sumiram da FTX em 72 horas</p>
+              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed mb-4">Dinheiro desaparecer enquanto clientes viam saldos &quot;normais&quot; na plataforma.</p>
+              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed">No curso, você aprende a manter controle direto dos seus ativos, sem depender de terceiros.</p>
+            </div>
+            <div className="rounded-2xl p-6 md:p-8 bg-[var(--bg-card)] border border-[var(--border)]">
+              <p className="text-[3rem] md:text-[3.5rem] font-bold leading-none text-white">72</p>
+              <p className="text-sm font-semibold text-white mt-1 mb-4">Ataques físicos apenas em 2026</p>
+              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed mb-4">Casos de extorsão e sequestro ligados a cripto cresceram.</p>
+              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed">No curso, você aprende práticas de privacidade que reduzem sua exposição, inclusive fora do ambiente digital!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ FAQ ═══ */}
+      <section className="py-20 md:py-28">
+        <div className="max-w-3xl mx-auto px-6">
+          <p className="text-xs font-mono text-[var(--orange)] tracking-[0.2em] uppercase mb-4">PERGUNTAS FREQUENTES</p>
+          <h2 className="text-2xl md:text-3xl font-bold mb-12">Antes de decidir</h2>
+          <div>
+            {FAQS.map((faq) => (<FaqItem key={faq.q} q={faq.q} a={faq.a} />))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ FOOTER ═══ */}
+      <footer className="border-t border-[var(--border)]/50 py-8">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-[var(--orange)] rounded-sm flex items-center justify-center">
+              <span className="text-[8px] font-black text-black">D</span>
+            </div>
+            <span className="text-xs font-bold tracking-wide">SEC LABS</span>
+          </div>
+          <div className="flex gap-6 text-xs text-[var(--text-muted)]">
+            <a href="https://youtube.com/@dseclabs" target="_blank" rel="noopener" className="hover:text-white transition-colors">Youtube</a>
+            <a href="https://instagram.com/dseclab.io" target="_blank" rel="noopener" className="hover:text-white transition-colors">Instagram</a>
+            <a href="https://x.com/alfredp2p" target="_blank" rel="noopener" className="hover:text-white transition-colors">Alfredp2p</a>
+            <a href="https://discord.dseclab.io" target="_blank" rel="noopener" className="hover:text-white transition-colors">Discord</a>
+            <a href="https://t.me/alfredp2p" target="_blank" rel="noopener" className="hover:text-white transition-colors">Telegram</a>
+          </div>
+          <p className="text-xs text-[var(--text-muted)]">© 2026 DSEC Labs. No Trust. Do It Yourself.</p>
+        </div>
+      </footer>
+    </main>
   );
 }
