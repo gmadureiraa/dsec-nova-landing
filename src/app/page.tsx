@@ -200,36 +200,51 @@ export default function Home() {
 
       {/* ═══ HERO ═══ */}
       <section className="relative min-h-screen pt-14 overflow-hidden" id="start">
+        {/* BG: perspective grid image filling entire hero */}
         <div className="absolute inset-0 z-0">
-          <Image src="/assets/hero-bg.png" alt="" fill className="object-cover opacity-40" priority />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--bg)]/30 to-[var(--bg)]" />
+          <Image src="/assets/hero-bg.png" alt="" fill className="object-cover opacity-50" priority />
+          <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg)]/20 via-transparent to-[var(--bg)]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[var(--bg)]/60" />
         </div>
-        <div className="relative z-10 max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10 max-w-6xl mx-auto px-6 pt-24 pb-20 md:pt-32 md:pb-28">
+          <div className="grid md:grid-cols-[1fr_380px] gap-16 items-center">
+            {/* Left: headline + subtitle */}
             <div className="animate-fade-up">
-              <h1 className="text-3xl md:text-[2.8rem] leading-[1.12] font-bold mb-4">
-                <span className="text-[var(--orange)]">Comprar Bitcoin é fácil...</span>
+              <h1 className="text-3xl md:text-[2.6rem] lg:text-[3rem] leading-[1.15] mb-5">
+                <span className="text-[var(--orange)] font-bold italic">Comprar Bitcoin é fácil...</span>
                 <br />
-                <span className="text-white">Difícil</span>{" "}
-                <span className="text-white font-normal">é fazer com</span>
+                <span className="text-white font-bold">Difícil</span>{" "}
+                <span className="text-white">é fazer com</span>
                 <br />
-                <span className="text-white font-normal">privacidade e controle</span>
+                <span className="text-white">privacidade e controle</span>
               </h1>
-              <p className="text-sm text-[var(--text-muted)] leading-relaxed max-w-md mt-4 animate-fade-up delay-1">
+              <p className="text-[15px] text-[var(--text-muted)] leading-relaxed max-w-md mt-5 animate-fade-up delay-1">
                 <span className="text-[var(--orange)] font-semibold">Apenas 5 dias,</span>{" "}
                 você sai do zero e aprende a comprar, guardar e usar Bitcoin com autonomia total.
               </p>
             </div>
+
+            {/* Right: form card with Alfred overlapping */}
             <div className="relative animate-fade-up delay-2">
-              <div className="relative rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-6 md:p-8 overflow-hidden">
-                <div className="absolute inset-0 opacity-30">
+              {/* Alfred overlapping from behind the card */}
+              <div className="absolute -left-16 -bottom-4 w-[150px] md:w-[180px] z-30 pointer-events-none">
+                <Image
+                  src="/assets/alfred.png"
+                  alt="Alfred"
+                  width={180}
+                  height={225}
+                  className="drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+                  unoptimized
+                />
+              </div>
+
+              <div className="relative rounded-2xl border border-[var(--border)]/60 bg-[var(--bg-card)]/90 backdrop-blur-md p-6 md:p-7 overflow-hidden">
+                {/* Subtle curved bg shape inside card */}
+                <div className="absolute inset-0 opacity-20 rounded-2xl overflow-hidden">
                   <Image src="/assets/form-bg.png" alt="" fill className="object-cover" />
                 </div>
                 <div className="relative z-10">
                   <EmailForm />
-                </div>
-                <div className="absolute -bottom-2 -right-4 w-[120px] md:w-[140px] z-20">
-                  <Image src="/assets/alfred.png" alt="Alfred" width={140} height={175} className="drop-shadow-2xl" unoptimized />
                 </div>
               </div>
             </div>
@@ -253,30 +268,32 @@ export default function Home() {
       </section>
 
       {/* ═══ O QUE VOCÊ VAI RECEBER ═══ */}
-      <section className="py-20 md:py-28">
+      <section className="py-24 md:py-32 border-t border-[var(--border)]/30">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
             <div>
-              <p className="text-xs font-mono text-[var(--text-muted)] tracking-[0.2em] uppercase mb-4">O QUE VOCÊ VAI RECEBER</p>
-              <h2 className="text-2xl md:text-[2.2rem] font-bold leading-tight">
+              <p className="text-[11px] font-mono text-[var(--text-muted)] tracking-[0.25em] uppercase mb-5">O QUE VOCÊ VAI RECEBER</p>
+              <h2 className="text-[1.75rem] md:text-[2.2rem] font-bold leading-[1.2]">
                 5 dias.<br />5 aulas que mudam como<br />você protege seu dinheiro.
               </h2>
             </div>
-            <a href="#start" className="inline-flex items-center gap-2 px-6 py-3 border border-[var(--orange)] text-[var(--orange)] rounded-full text-sm font-semibold hover:bg-[var(--orange)] hover:text-black transition-all shrink-0">
+            <a href="#start" className="inline-flex items-center gap-2 px-7 py-3.5 border border-[var(--orange)] text-[var(--orange)] rounded-full text-sm font-semibold hover:bg-[var(--orange)] hover:text-black transition-all shrink-0">
               Quero o primeiro dia
             </a>
           </div>
-          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-2 px-2 no-scrollbar">
+
+          {/* 5 cards — full width grid on desktop, scroll on mobile */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
             {DAYS.map((day) => (
-              <div key={day.num} className="snap-start shrink-0 w-[240px] md:w-[260px] rounded-xl bg-[var(--bg-card)] border border-[var(--border)]/50 overflow-hidden group">
-                <div className="relative aspect-[4/3] overflow-hidden">
+              <div key={day.num} className="rounded-xl bg-[var(--bg-card)] border border-[var(--border)]/40 overflow-hidden group">
+                <div className="relative aspect-square overflow-hidden">
                   <Image src={day.img} alt={`Dia ${day.num}`} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
-                  <span className="absolute top-3 left-3 text-[9px] font-mono tracking-widest uppercase text-[var(--orange)] bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-full border border-[var(--orange)]/30">DIA {day.num}</span>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-card)] via-transparent to-transparent" />
+                  <span className="absolute top-2.5 left-2.5 text-[8px] font-mono tracking-widest uppercase text-[var(--orange)] bg-black/70 backdrop-blur-sm px-2 py-0.5 rounded-full border border-[var(--orange)]/30">DIA {day.num}</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-card)] via-[var(--bg-card)]/20 to-transparent" />
                 </div>
-                <div className="p-4">
-                  <h3 className="text-[13px] font-semibold leading-snug mb-2 text-white">{day.title}</h3>
-                  <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">{day.desc}</p>
+                <div className="p-3 md:p-4">
+                  <h3 className="text-[12px] md:text-[13px] font-semibold leading-snug mb-1.5 text-white">{day.title}</h3>
+                  <p className="text-[10px] md:text-[11px] text-[var(--text-muted)] leading-relaxed">{day.desc}</p>
                 </div>
               </div>
             ))}
@@ -285,9 +302,9 @@ export default function Home() {
       </section>
 
       {/* ═══ POR QUE SE IMPORTAR ═══ */}
-      <section className="py-20 md:py-28">
+      <section className="py-24 md:py-32 border-t border-[var(--border)]/30">
         <div className="max-w-6xl mx-auto px-6">
-          <p className="text-center text-xs font-mono text-[var(--text-muted)] tracking-[0.2em] uppercase mb-12">POR QUE VOCÊ DEVERIA SE IMPORTAR AGORA</p>
+          <p className="text-center text-[11px] font-mono text-[var(--text-muted)] tracking-[0.25em] uppercase mb-14">POR QUE VOCÊ DEVERIA SE IMPORTAR AGORA</p>
           <div className="grid md:grid-cols-3 gap-5">
             <div className="rounded-2xl p-6 md:p-8 border border-[var(--gold)]/30" style={{ background: "linear-gradient(145deg, #6b4f1d 0%, #3d2e11 100%)" }}>
               <p className="text-[3rem] md:text-[3.5rem] font-bold leading-none text-white">270<span className="text-2xl">mil</span></p>
@@ -312,10 +329,10 @@ export default function Home() {
       </section>
 
       {/* ═══ FAQ ═══ */}
-      <section className="py-20 md:py-28">
-        <div className="max-w-3xl mx-auto px-6">
-          <p className="text-xs font-mono text-[var(--orange)] tracking-[0.2em] uppercase mb-4">PERGUNTAS FREQUENTES</p>
-          <h2 className="text-2xl md:text-3xl font-bold mb-12">Antes de decidir</h2>
+      <section className="py-24 md:py-32 border-t border-[var(--border)]/30">
+        <div className="max-w-2xl mx-auto px-6">
+          <p className="text-[11px] font-mono text-[var(--orange)] tracking-[0.25em] uppercase mb-3">PERGUNTAS FREQUENTES</p>
+          <h2 className="text-2xl md:text-[2rem] font-bold mb-14">Antes de decidir</h2>
           <div>
             {FAQS.map((faq) => (<FaqItem key={faq.q} q={faq.q} a={faq.a} />))}
           </div>
