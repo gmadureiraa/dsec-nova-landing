@@ -3,64 +3,30 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 
-/* ─── DATA ─── */
+/* ═══════════════════════════════════════════════════════════════════
+   DATA
+   ═══════════════════════════════════════════════════════════════════ */
+
 const DAYS = [
-  {
-    num: "01",
-    title: "O motivo real pelo qual governos querem controlar seu dinheiro digital",
-    desc: "Inflação programada, vigilância financeira e o que o Plano Collor ensina sobre CBDCs.",
-    img: "/days/day1.jpg",
-  },
-  {
-    num: "02",
-    title: "O evento de 1971 que transformou seu salário em papel depreciável",
-    desc: "O que mudou quando Nixon tirou o dólar do ouro — e por que Bitcoin é a resposta.",
-    img: "/days/day2.jpg",
-  },
-  {
-    num: "03",
-    title: "Por que o Bitcoin que está na sua exchange não é seu",
-    desc: "Mt. Gox, FTX, Celsius — o padrão que se repete. E o método P2P que elimina o risco.",
-    img: "/days/day3.jpg",
-  },
-  {
-    num: "04",
-    title: "O ataque de US$ 284 milhões que começou com um telefonema",
-    desc: "Phishing, wrench attacks e engenharia social. Como criar um setup à prova de tudo.",
-    img: "/days/day4.jpg",
-  },
-  {
-    num: "05",
-    title: "O setup que cabe no bolso e não existe pra nenhum hacker do mundo",
-    desc: "Air-gapped, open-source, backup em metal. Passo a passo do seu cofre pessoal.",
-    img: "/days/day5.jpg",
-  },
+  { num: "01", title: "O motivo real pelo qual governos querem controlar seu dinheiro digital", desc: "Inflação programada, vigilância financeira e o que o Plano Collor ensina sobre CBDCs.", img: "/days/day1.jpg" },
+  { num: "02", title: "O evento de 1971 que transformou seu salário em papel depreciável", desc: "O que mudou quando Nixon tirou o dólar do ouro — e por que Bitcoin é a resposta.", img: "/days/day2.jpg" },
+  { num: "03", title: "Por que o Bitcoin que está na sua exchange não é seu", desc: "Mt. Gox, FTX, Celsius — o padrão que se repete. E o método P2P que elimina o risco.", img: "/days/day3.jpg" },
+  { num: "04", title: "O ataque de US$ 284 milhões que começou com um telefonema", desc: "Phishing, wrench attacks e engenharia social. Como criar um setup à prova de tudo.", img: "/days/day4.jpg" },
+  { num: "05", title: "O setup que cabe no bolso e não existe pra nenhum hacker do mundo", desc: "Air-gapped, open-source, backup em metal. Passo a passo do seu cofre pessoal.", img: "/days/day5.jpg" },
 ];
 
 const FAQS = [
-  {
-    q: "Já comprei na Binance com KYC. Ainda faz sentido pra mim?",
-    a: "Faz mais sentido ainda. Seus dados já existem num banco de dados. O curso ensina como a partir de agora suas próximas compras não criem mais registros — e como proteger o que você já tem.",
-  },
-  {
-    q: "É gratuito mesmo? Qual a pegadinha?",
-    a: "Nenhuma. A DSEC Labs fabrica hardware de segurança Bitcoin. Quanto mais gente entender self-custody, mais gente precisa de cofres bons. A educação é o marketing.",
-  },
-  {
-    q: "Vou precisar comprar algum equipamento?",
-    a: "Não. O curso ensina conceitos que funcionam com qualquer hardware wallet. Se depois quiser conhecer o ColdKit, vai ser uma escolha sua — não uma obrigação.",
-  },
-  {
-    q: "Tenho medo de perder acesso ao meu Bitcoin com self-custody.",
-    a: "Esse medo é normal e saudável. O dia 4 do curso é dedicado inteiramente a isso: como fazer backup à prova de incêndio, enchente e esquecimento.",
-  },
-  {
-    q: "Como sei que meu e-mail não vai ser vendido?",
-    a: "Somos uma empresa de segurança Bitcoin. Se vazássemos dados de clientes, não teríamos empresa. Privacidade é o nosso produto.",
-  },
+  { q: "Já comprei na Binance com KYC. Ainda faz sentido pra mim?", a: "Faz mais sentido ainda. Seus dados já existem num banco de dados. O curso ensina como a partir de agora suas próximas compras não criem mais registros — e como proteger o que você já tem." },
+  { q: "É gratuito mesmo? Qual a pegadinha?", a: "Nenhuma. A DSEC Labs fabrica hardware de segurança Bitcoin. Quanto mais gente entender self-custody, mais gente precisa de cofres bons. A educação é o marketing." },
+  { q: "Vou precisar comprar algum equipamento?", a: "Não. O curso ensina conceitos que funcionam com qualquer hardware wallet. Se depois quiser conhecer o ColdKit, vai ser uma escolha sua — não uma obrigação." },
+  { q: "Tenho medo de perder acesso ao meu Bitcoin com self-custody.", a: "Esse medo é normal e saudável. O dia 4 do curso é dedicado inteiramente a isso: como fazer backup à prova de incêndio, enchente e esquecimento." },
+  { q: "Como sei que meu e-mail não vai ser vendido?", a: "Somos uma empresa de segurança Bitcoin. Se vazássemos dados de clientes, não teríamos empresa. Privacidade é o nosso produto." },
 ];
 
-/* ─── EMAIL FORM ─── */
+/* ═══════════════════════════════════════════════════════════════════
+   FORM — RD Station
+   ═══════════════════════════════════════════════════════════════════ */
+
 function EmailForm() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -71,229 +37,199 @@ function EmailForm() {
     e.preventDefault();
     if (!email) return;
     setStatus("loading");
-
-    const hiddenForm = document.createElement("form");
-    hiddenForm.method = "POST";
-    hiddenForm.action = "https://app.rdstation.com.br/api/1.2/conversions";
-    hiddenForm.target = "rd-iframe-nova";
-    hiddenForm.style.display = "none";
-
+    const f = document.createElement("form");
+    f.method = "POST";
+    f.action = "https://app.rdstation.com.br/api/1.2/conversions";
+    f.target = "rd-iframe-nova";
+    f.style.display = "none";
     const fields: Record<string, string> = {
       token_rdstation: "null",
       identificador: "forms-captura-leads-x-c92b969c120bb9b7290a",
-      email,
-      celular: phone,
-      c_utmz: "",
-      traffic_source: document.referrer || "",
+      email, celular: phone, c_utmz: "", traffic_source: document.referrer || "",
     };
-
-    Object.entries(fields).forEach(([key, value]) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = value;
-      hiddenForm.appendChild(input);
+    Object.entries(fields).forEach(([k, v]) => {
+      const i = document.createElement("input");
+      i.type = "hidden"; i.name = k; i.value = v;
+      f.appendChild(i);
     });
-
-    document.body.appendChild(hiddenForm);
-    hiddenForm.submit();
-    document.body.removeChild(hiddenForm);
-
-    setTimeout(() => {
-      window.location.href = "/obrigado";
-    }, 800);
+    document.body.appendChild(f);
+    f.submit();
+    document.body.removeChild(f);
+    setTimeout(() => { window.location.href = "/obrigado"; }, 800);
   };
+
+  const inputCls = "w-full px-4 py-3 bg-[#0a0a0a] border-b border-[#333] text-[14px] text-white placeholder:text-[#555] focus:outline-none focus:border-[#c8913a] transition-colors";
 
   return (
     <>
       <iframe name="rd-iframe-nova" ref={iframeRef} className="hidden" />
-      <form onSubmit={handleSubmit} className="space-y-3 w-full">
+      <form onSubmit={handleSubmit} className="space-y-5 w-full">
         <div>
-          <label className="block text-xs text-[var(--text-muted)] mb-1.5">E-mail</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="+60.000"
-            required
-            disabled={status === "loading"}
-            className="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-sm text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--orange)] transition-colors disabled:opacity-50"
-          />
+          <label className="block text-[11px] text-[#777] mb-2 tracking-wide">E-mail</label>
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="+60.000" required disabled={status === "loading"} className={inputCls + " disabled:opacity-50"} />
         </div>
         <div>
-          <label className="block text-xs text-[var(--text-muted)] mb-1.5">WhatsApp</label>
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="+55 021 987899372"
-            className="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-sm text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--orange)] transition-colors"
-          />
+          <label className="block text-[11px] text-[#777] mb-2 tracking-wide">WhatsApp</label>
+          <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+55 021 987899372" className={inputCls} />
         </div>
-        <button
-          type="submit"
-          disabled={status === "loading"}
-          className="w-full py-3.5 bg-[var(--orange)] text-black font-bold rounded-lg hover:brightness-110 transition-all cursor-pointer disabled:opacity-70 flex items-center justify-center gap-2"
-        >
-          {status === "loading" ? "Enviando..." : "Enviar"}
-          {status !== "loading" && (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          )}
+        <button type="submit" disabled={status === "loading"} className="w-full mt-2 py-3.5 bg-[#c8913a] text-black text-[14px] font-bold rounded-lg hover:brightness-110 transition-all cursor-pointer disabled:opacity-70 flex items-center justify-center gap-2">
+          {status === "loading" ? "Enviando..." : (<>Enviar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>)}
         </button>
       </form>
     </>
   );
 }
 
-/* ─── FAQ ITEM ─── */
+/* ═══════════════════════════════════════════════════════════════════
+   FAQ
+   ═══════════════════════════════════════════════════════════════════ */
+
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-[var(--border)]">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-6 text-left group cursor-pointer"
-      >
-        <span className="text-[15px] font-semibold text-white group-hover:text-[var(--orange)] transition-colors pr-6">
-          {q}
-        </span>
-        <span className={`text-[var(--text-muted)] text-xl shrink-0 transition-transform duration-200 ${open ? "rotate-45" : ""}`}>
-          +
-        </span>
+    <div className="border-b border-[#222]">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between py-7 text-left group cursor-pointer">
+        <span className="text-[15px] font-semibold text-white pr-8">{q}</span>
+        <span className={`text-[#555] text-lg shrink-0 transition-transform duration-200 ${open ? "rotate-45" : ""}`}>+</span>
       </button>
       <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-48 pb-6" : "max-h-0"}`}>
-        <p className="text-sm text-[var(--text-muted)] leading-relaxed">{a}</p>
+        <p className="text-[14px] text-[#888] leading-relaxed">{a}</p>
       </div>
     </div>
   );
 }
 
-/* ─── MAIN PAGE ─── */
+/* ═══════════════════════════════════════════════════════════════════
+   PAGE
+   ═══════════════════════════════════════════════════════════════════ */
+
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[var(--bg)]">
+    <main className="min-h-screen" style={{ background: "#0e0e0e", color: "#e8e8e8" }}>
 
-      {/* ═══ NAV ═══ */}
-      <nav className="fixed top-0 inset-x-0 z-50 bg-[var(--bg)]/80 backdrop-blur-xl border-b border-[var(--border)]/50">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 bg-[var(--orange)] rounded-sm flex items-center justify-center">
-              <span className="text-[10px] font-black text-black">D</span>
+      {/* ──────────── NAV ──────────── */}
+      <nav className="fixed top-0 inset-x-0 z-50 border-b border-[#1f1f1f]" style={{ background: "rgba(14,14,14,0.85)", backdropFilter: "blur(20px)" }}>
+        <div className="max-w-[1120px] mx-auto px-8 h-[56px] flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center gap-1.5">
+            <div className="w-[18px] h-[18px] bg-[#c8913a] rounded-[3px] flex items-center justify-center">
+              <span className="text-[9px] font-black text-black leading-none">D</span>
             </div>
-            <span className="text-sm font-bold tracking-wide">SEC LABS</span>
+            <span className="text-[13px] font-bold tracking-[0.08em] text-white">SEC LABS</span>
           </div>
-          <div className="hidden md:flex items-center gap-6 text-[13px] text-[var(--text-muted)]">
-            <a href="https://youtube.com/@dseclabs" target="_blank" rel="noopener" className="hover:text-white transition-colors">Youtube</a>
-            <a href="https://instagram.com/dseclab.io" target="_blank" rel="noopener" className="hover:text-white transition-colors">Instagram</a>
-            <a href="https://x.com/alfredp2p" target="_blank" rel="noopener" className="hover:text-white transition-colors">Alfredp2p</a>
-            <a href="https://x.com/alfredp2p" target="_blank" rel="noopener" className="hover:text-white transition-colors">X</a>
-            <a href="https://tiktok.com/@dseclab" target="_blank" rel="noopener" className="hover:text-white transition-colors">Tiktok</a>
-            <a href="https://t.me/alfredp2p" target="_blank" rel="noopener" className="hover:text-white transition-colors">Telegram</a>
+
+          {/* Center links */}
+          <div className="hidden md:flex items-center gap-7 text-[13px] text-[#888]">
+            {["Youtube", "Instagram", "Alfredp2p", "X", "Tiktok", "Telegram"].map(l => (
+              <a key={l} href="#" className="hover:text-white transition-colors">{l}</a>
+            ))}
           </div>
-          <a href="#start" className="text-xs font-semibold border border-[var(--orange)] text-[var(--orange)] px-4 py-2 rounded-full hover:bg-[var(--orange)] hover:text-black transition-all">
+
+          {/* CTA */}
+          <a href="#start" className="text-[12px] font-semibold border border-[#c8913a] text-[#c8913a] px-5 py-[7px] rounded-full hover:bg-[#c8913a] hover:text-black transition-all">
             Quero o Curso
           </a>
         </div>
       </nav>
 
-      {/* ═══ HERO ═══ */}
-      <section className="relative min-h-screen pt-14 overflow-hidden" id="start">
-        {/* BG: perspective grid image filling entire hero */}
+      {/* ──────────── HERO ──────────── */}
+      <section className="relative pt-[56px] overflow-hidden" id="start">
+        {/* Background: perspective grid */}
         <div className="absolute inset-0 z-0">
-          <Image src="/assets/hero-bg.png" alt="" fill className="object-cover opacity-50" priority />
-          <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg)]/20 via-transparent to-[var(--bg)]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[var(--bg)]/60" />
+          <Image src="/assets/hero-bg.png" alt="" fill className="object-cover" style={{ opacity: 0.55 }} priority />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(14,14,14,0.1) 0%, rgba(14,14,14,0.4) 50%, rgba(14,14,14,1) 100%)" }} />
         </div>
-        <div className="relative z-10 max-w-6xl mx-auto px-6 pt-24 pb-20 md:pt-32 md:pb-28">
-          <div className="grid md:grid-cols-[1fr_380px] gap-16 items-center">
-            {/* Left: headline + subtitle */}
-            <div className="animate-fade-up">
-              <h1 className="text-3xl md:text-[2.6rem] lg:text-[3rem] leading-[1.15] mb-5">
-                <span className="text-[var(--orange)] font-bold italic">Comprar Bitcoin é fácil...</span>
+
+        <div className="relative z-10 max-w-[1120px] mx-auto px-8 pt-[80px] pb-[60px] md:pt-[120px] md:pb-[80px]">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-12">
+
+            {/* Left: Copy */}
+            <div className="max-w-[480px] shrink-0">
+              <h1 className="text-[28px] md:text-[38px] lg:text-[44px] leading-[1.15] mb-5">
+                <span className="text-[#c8913a] font-bold" style={{ fontStyle: "italic" }}>
+                  Comprar Bitcoin é fácil...
+                </span>
                 <br />
                 <span className="text-white font-bold">Difícil</span>{" "}
-                <span className="text-white">é fazer com</span>
+                <span className="text-white font-light">é fazer com</span>
                 <br />
-                <span className="text-white">privacidade e controle</span>
+                <span className="text-white font-light">privacidade e controle</span>
               </h1>
-              <p className="text-[15px] text-[var(--text-muted)] leading-relaxed max-w-md mt-5 animate-fade-up delay-1">
-                <span className="text-[var(--orange)] font-semibold">Apenas 5 dias,</span>{" "}
+              <p className="text-[14px] text-[#888] leading-[1.7] max-w-[400px]">
+                <span className="text-[#c8913a] font-semibold">Apenas 5 dias,</span>{" "}
                 você sai do zero e aprende a comprar, guardar e usar Bitcoin com autonomia total.
               </p>
             </div>
 
-            {/* Right: form card with Alfred overlapping */}
-            <div className="relative animate-fade-up delay-2">
-              {/* Alfred overlapping from behind the card */}
-              <div className="absolute -left-16 -bottom-4 w-[150px] md:w-[180px] z-30 pointer-events-none">
-                <Image
-                  src="/assets/alfred.png"
-                  alt="Alfred"
-                  width={180}
-                  height={225}
-                  className="drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-                  unoptimized
-                />
+            {/* Right: Form card + Alfred */}
+            <div className="relative w-full max-w-[380px]">
+              {/* Alfred — positioned between text and form, overlapping card from the left */}
+              <div className="absolute -left-[70px] bottom-0 w-[160px] z-30 pointer-events-none hidden md:block">
+                <Image src="/assets/alfred.png" alt="Alfred" width={160} height={200} className="drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]" unoptimized />
               </div>
 
-              <div className="relative rounded-2xl border border-[var(--border)]/60 bg-[var(--bg-card)]/90 backdrop-blur-md p-6 md:p-7 overflow-hidden">
-                {/* Subtle curved bg shape inside card */}
-                <div className="absolute inset-0 opacity-20 rounded-2xl overflow-hidden">
-                  <Image src="/assets/form-bg.png" alt="" fill className="object-cover" />
+              {/* Form card */}
+              <div className="relative rounded-[20px] overflow-hidden" style={{ background: "#161616", border: "1px solid #222" }}>
+                {/* Curved dark shape inside card (top area) */}
+                <div className="absolute inset-0 overflow-hidden rounded-[20px]">
+                  <Image src="/assets/form-bg.png" alt="" fill className="object-cover opacity-25" />
                 </div>
-                <div className="relative z-10">
+                <div className="relative z-10 px-7 py-8">
                   <EmailForm />
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="relative z-10 border-t border-[var(--border)]/50 bg-[var(--bg)]/80 backdrop-blur-sm">
-          <div className="max-w-6xl mx-auto px-6 py-5 flex flex-wrap items-center justify-between gap-4 text-sm">
-            <div>
-              <span className="font-bold text-white uppercase tracking-wide">100% GRATUITO</span>
-              <span className="text-[var(--text-muted)] ml-3">Curso focado em pontos não óbvios</span>
+
+        {/* Trust strip */}
+        <div className="relative z-10 border-t border-[#1f1f1f]" style={{ background: "rgba(14,14,14,0.9)" }}>
+          <div className="max-w-[1120px] mx-auto px-8 py-[18px] flex flex-wrap items-center justify-between gap-y-3 text-[13px]">
+            <div className="flex items-baseline gap-2">
+              <span className="font-bold text-white tracking-wide uppercase" style={{ fontStyle: "italic" }}>100% GRATUITO</span>
+              <span className="text-[#666]">Curso focado em pontos não óbvios</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="font-bold text-white tracking-wide uppercase">5 DIAS</span>
+              <span className="text-[#666]">Curta duração, alta carga de conhecimento</span>
             </div>
             <div>
-              <span className="font-bold text-white uppercase tracking-wide">5 DIAS</span>
-              <span className="text-[var(--text-muted)] ml-3">Curta duração, alta carga de conhecimento</span>
-            </div>
-            <div>
-              <span className="font-bold text-white uppercase tracking-wide italic">CADASTRO RÁPIDO</span>
+              <span className="font-bold text-white tracking-wide uppercase" style={{ fontStyle: "italic" }}>CADASTRO RÁPIDO</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══ O QUE VOCÊ VAI RECEBER ═══ */}
-      <section className="py-24 md:py-32 border-t border-[var(--border)]/30">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
+      {/* ──────────── O QUE VOCÊ VAI RECEBER ──────────── */}
+      <section className="py-[80px] md:py-[100px]" style={{ background: "#111" }}>
+        <div className="max-w-[1120px] mx-auto px-8">
+          {/* Header row */}
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-[48px]">
             <div>
-              <p className="text-[11px] font-mono text-[var(--text-muted)] tracking-[0.25em] uppercase mb-5">O QUE VOCÊ VAI RECEBER</p>
-              <h2 className="text-[1.75rem] md:text-[2.2rem] font-bold leading-[1.2]">
+              <p className="text-[10px] font-mono text-[#777] tracking-[0.3em] uppercase mb-5">O QUE VOCÊ VAI RECEBER</p>
+              <h2 className="text-[24px] md:text-[32px] font-bold leading-[1.25]">
                 5 dias.<br />5 aulas que mudam como<br />você protege seu dinheiro.
               </h2>
             </div>
-            <a href="#start" className="inline-flex items-center gap-2 px-7 py-3.5 border border-[var(--orange)] text-[var(--orange)] rounded-full text-sm font-semibold hover:bg-[var(--orange)] hover:text-black transition-all shrink-0">
+            <a href="#start" className="inline-flex items-center gap-2 px-6 py-3 border border-[#c8913a] text-[#c8913a] rounded-full text-[13px] font-semibold hover:bg-[#c8913a] hover:text-black transition-all shrink-0 self-start md:self-auto">
               Quero o primeiro dia
             </a>
           </div>
 
-          {/* 5 cards — full width grid on desktop, scroll on mobile */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
-            {DAYS.map((day) => (
-              <div key={day.num} className="rounded-xl bg-[var(--bg-card)] border border-[var(--border)]/40 overflow-hidden group">
-                <div className="relative aspect-square overflow-hidden">
+          {/* 5 day cards — all same width, full row */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-[12px]">
+            {DAYS.map(day => (
+              <div key={day.num} className="rounded-[12px] overflow-hidden group" style={{ background: "#1a1a1a" }}>
+                <div className="relative aspect-[1/1] overflow-hidden">
                   <Image src={day.img} alt={`Dia ${day.num}`} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
-                  <span className="absolute top-2.5 left-2.5 text-[8px] font-mono tracking-widest uppercase text-[var(--orange)] bg-black/70 backdrop-blur-sm px-2 py-0.5 rounded-full border border-[var(--orange)]/30">DIA {day.num}</span>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-card)] via-[var(--bg-card)]/20 to-transparent" />
+                  <span className="absolute top-[10px] left-[10px] text-[8px] font-mono tracking-[0.15em] uppercase text-[#c8913a] bg-black/70 px-[8px] py-[3px] rounded-full" style={{ border: "1px solid rgba(200,145,58,0.3)" }}>
+                    DIA {day.num}
+                  </span>
+                  <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-[#1a1a1a] to-transparent" />
                 </div>
-                <div className="p-3 md:p-4">
-                  <h3 className="text-[12px] md:text-[13px] font-semibold leading-snug mb-1.5 text-white">{day.title}</h3>
-                  <p className="text-[10px] md:text-[11px] text-[var(--text-muted)] leading-relaxed">{day.desc}</p>
+                <div className="px-[14px] py-[14px]">
+                  <h3 className="text-[12px] font-bold leading-[1.4] text-white mb-[6px]">{day.title}</h3>
+                  <p className="text-[10px] text-[#777] leading-[1.5]">{day.desc}</p>
                 </div>
               </div>
             ))}
@@ -301,61 +237,81 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══ POR QUE SE IMPORTAR ═══ */}
-      <section className="py-24 md:py-32 border-t border-[var(--border)]/30">
-        <div className="max-w-6xl mx-auto px-6">
-          <p className="text-center text-[11px] font-mono text-[var(--text-muted)] tracking-[0.25em] uppercase mb-14">POR QUE VOCÊ DEVERIA SE IMPORTAR AGORA</p>
-          <div className="grid md:grid-cols-3 gap-5">
-            <div className="rounded-2xl p-6 md:p-8 border border-[var(--gold)]/30" style={{ background: "linear-gradient(145deg, #6b4f1d 0%, #3d2e11 100%)" }}>
-              <p className="text-[3rem] md:text-[3.5rem] font-bold leading-none text-white">270<span className="text-2xl">mil</span></p>
-              <p className="text-sm font-semibold text-white mt-1 mb-4">Clientes com dados vazados</p>
-              <p className="text-[13px] text-white/70 leading-relaxed mb-4">Uma fabricante de hardware wallets expôs nome, endereço e patrimônio de 270 mil usuários, abrindo espaço para phishing direcionado e invasões físicas.</p>
-              <p className="text-[13px] text-[var(--orange)] font-semibold leading-relaxed">No curso, <span className="underline">você aprende a operar sem vincular sua identidade às transações.</span></p>
+      {/* ──────────── POR QUE SE IMPORTAR ──────────── */}
+      <section className="py-[80px] md:py-[100px]" style={{ background: "#0e0e0e" }}>
+        <div className="max-w-[1120px] mx-auto px-8">
+          <p className="text-center text-[10px] font-mono text-[#777] tracking-[0.3em] uppercase mb-[48px]">
+            POR QUE VOCÊ DEVERIA SE IMPORTAR AGORA
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-[16px]">
+            {/* Card 1: Gold/bronze gradient */}
+            <div className="rounded-[16px] p-[28px] md:p-[32px]" style={{ background: "linear-gradient(160deg, #705020 0%, #3a2a10 50%, #2a1e0c 100%)", border: "1px solid rgba(200,145,58,0.2)" }}>
+              <p className="text-[52px] md:text-[60px] font-bold leading-none text-white" style={{ fontFamily: "var(--font-geist-sans)" }}>
+                270<span className="text-[24px] font-bold">mil</span>
+              </p>
+              <p className="text-[13px] font-bold text-white mt-[4px] mb-[16px]">Clientes com dados vazados</p>
+              <p className="text-[12px] text-white/60 leading-[1.6] mb-[16px]">
+                Uma fabricante de hardware wallets expôs nome, endereço e patrimônio de 270 mil usuários, abrindo espaço para phishing direcionado e invasões físicas.
+              </p>
+              <p className="text-[12px] text-[#c8913a] font-semibold leading-[1.6]">
+                No curso, <span className="underline decoration-[#c8913a]">você aprende a operar sem vincular sua identidade às transações.</span>
+              </p>
             </div>
-            <div className="rounded-2xl p-6 md:p-8 bg-[var(--bg-card)] border border-[var(--border)]">
-              <p className="text-[3rem] md:text-[3.5rem] font-bold leading-none text-white">$8B</p>
-              <p className="text-sm font-semibold text-white mt-1 mb-4">Sumiram da FTX em 72 horas</p>
-              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed mb-4">Dinheiro desaparecer enquanto clientes viam saldos &quot;normais&quot; na plataforma.</p>
-              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed">No curso, você aprende a manter controle direto dos seus ativos, sem depender de terceiros.</p>
+
+            {/* Card 2 */}
+            <div className="rounded-[16px] p-[28px] md:p-[32px]" style={{ background: "#1a1a1a", border: "1px solid #222" }}>
+              <p className="text-[52px] md:text-[60px] font-bold leading-none text-white">$8B</p>
+              <p className="text-[13px] font-bold text-white mt-[4px] mb-[16px]">Sumiram da FTX em 72 horas</p>
+              <p className="text-[12px] text-[#888] leading-[1.6] mb-[12px]">
+                Dinheiro desaparecer enquanto clientes viam saldos &quot;normais&quot; na plataforma.
+              </p>
+              <p className="text-[12px] text-[#888] leading-[1.6]">
+                No curso, você aprende a manter controle direto dos seus ativos, sem depender de terceiros.
+              </p>
             </div>
-            <div className="rounded-2xl p-6 md:p-8 bg-[var(--bg-card)] border border-[var(--border)]">
-              <p className="text-[3rem] md:text-[3.5rem] font-bold leading-none text-white">72</p>
-              <p className="text-sm font-semibold text-white mt-1 mb-4">Ataques físicos apenas em 2026</p>
-              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed mb-4">Casos de extorsão e sequestro ligados a cripto cresceram.</p>
-              <p className="text-[13px] text-[var(--text-muted)] leading-relaxed">No curso, você aprende práticas de privacidade que reduzem sua exposição, inclusive fora do ambiente digital!</p>
+
+            {/* Card 3 */}
+            <div className="rounded-[16px] p-[28px] md:p-[32px]" style={{ background: "#1a1a1a", border: "1px solid #222" }}>
+              <p className="text-[52px] md:text-[60px] font-bold leading-none text-white">72</p>
+              <p className="text-[13px] font-bold text-white mt-[4px] mb-[16px]">Ataques físicos apenas em 2026</p>
+              <p className="text-[12px] text-[#888] leading-[1.6] mb-[12px]">
+                Casos de extorsão e sequestro ligados a cripto cresceram.
+              </p>
+              <p className="text-[12px] text-[#888] leading-[1.6]">
+                No curso, você aprende práticas de privacidade que reduzem sua exposição, inclusive fora do ambiente digital!
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══ FAQ ═══ */}
-      <section className="py-24 md:py-32 border-t border-[var(--border)]/30">
-        <div className="max-w-2xl mx-auto px-6">
-          <p className="text-[11px] font-mono text-[var(--orange)] tracking-[0.25em] uppercase mb-3">PERGUNTAS FREQUENTES</p>
-          <h2 className="text-2xl md:text-[2rem] font-bold mb-14">Antes de decidir</h2>
+      {/* ──────────── FAQ ──────────── */}
+      <section className="py-[80px] md:py-[100px]" style={{ background: "#0e0e0e" }}>
+        <div className="max-w-[560px] mx-auto px-8">
+          <p className="text-[10px] font-mono text-[#c8913a] tracking-[0.3em] uppercase mb-[10px]">PERGUNTAS FREQUENTES</p>
+          <h2 className="text-[24px] md:text-[28px] font-bold mb-[40px]">Antes de decidir</h2>
           <div>
-            {FAQS.map((faq) => (<FaqItem key={faq.q} q={faq.q} a={faq.a} />))}
+            {FAQS.map(faq => <FaqItem key={faq.q} q={faq.q} a={faq.a} />)}
           </div>
         </div>
       </section>
 
-      {/* ═══ FOOTER ═══ */}
-      <footer className="border-t border-[var(--border)]/50 py-8">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-[var(--orange)] rounded-sm flex items-center justify-center">
-              <span className="text-[8px] font-black text-black">D</span>
+      {/* ──────────── FOOTER ──────────── */}
+      <footer className="border-t border-[#1f1f1f] py-[28px]" style={{ background: "#0e0e0e" }}>
+        <div className="max-w-[1120px] mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-1.5">
+            <div className="w-[14px] h-[14px] bg-[#c8913a] rounded-[2px] flex items-center justify-center">
+              <span className="text-[7px] font-black text-black leading-none">D</span>
             </div>
-            <span className="text-xs font-bold tracking-wide">SEC LABS</span>
+            <span className="text-[11px] font-bold tracking-[0.08em] text-white">SEC LABS</span>
           </div>
-          <div className="flex gap-6 text-xs text-[var(--text-muted)]">
-            <a href="https://youtube.com/@dseclabs" target="_blank" rel="noopener" className="hover:text-white transition-colors">Youtube</a>
-            <a href="https://instagram.com/dseclab.io" target="_blank" rel="noopener" className="hover:text-white transition-colors">Instagram</a>
-            <a href="https://x.com/alfredp2p" target="_blank" rel="noopener" className="hover:text-white transition-colors">Alfredp2p</a>
-            <a href="https://discord.dseclab.io" target="_blank" rel="noopener" className="hover:text-white transition-colors">Discord</a>
-            <a href="https://t.me/alfredp2p" target="_blank" rel="noopener" className="hover:text-white transition-colors">Telegram</a>
+          <div className="flex gap-6 text-[12px] text-[#666]">
+            {["Youtube", "Instagram", "Alfredp2p", "Discord", "Telegram"].map(l => (
+              <a key={l} href="#" className="hover:text-white transition-colors">{l}</a>
+            ))}
           </div>
-          <p className="text-xs text-[var(--text-muted)]">© 2026 DSEC Labs. No Trust. Do It Yourself.</p>
+          <p className="text-[11px] text-[#555]">© 2026 DSEC Labs. No Trust. Do It Yourself.</p>
         </div>
       </footer>
     </main>
