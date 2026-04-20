@@ -8,11 +8,11 @@ import Image from "next/image";
    ═══════════════════════════════════════════════════════════════════ */
 
 const DAYS = [
-  { num: "01", title: "O motivo real pelo qual governos querem controlar seu dinheiro digital", desc: "Inflação programada, vigilância financeira e o que o Plano Collor ensina sobre CBDCs.", img: "/days/day1.jpg" },
-  { num: "02", title: "O evento de 1971 que transformou seu salário em papel depreciável", desc: "O que mudou quando Nixon tirou o dólar do ouro — e por que Bitcoin é a resposta.", img: "/days/day2.jpg" },
-  { num: "03", title: "Por que o Bitcoin que está na sua exchange não é seu", desc: "Mt. Gox, FTX, Celsius — o padrão que se repete. E o método P2P que elimina o risco.", img: "/days/day3.jpg" },
-  { num: "04", title: "O ataque de US$ 284 milhões que começou com um telefonema", desc: "Phishing, wrench attacks e engenharia social. Como criar um setup à prova de tudo.", img: "/days/day4.jpg" },
-  { num: "05", title: "O setup que cabe no bolso e não existe pra nenhum hacker do mundo", desc: "Air-gapped, open-source, backup em metal. Passo a passo do seu cofre pessoal.", img: "/days/day5.jpg" },
+  { num: "01", title: "Por que privacidade financeira importa", desc: "Vigilância financeira, CBDCs e por que ninguém deveria saber exatamente quanto você tem em Bitcoin.", img: "/days/day1.jpg" },
+  { num: "02", title: "O risco real das exchanges", desc: "Do Plano Collor à queda do padrão ouro — o padrão histórico de confisco que se repete em Mt. Gox, FTX e Celsius.", img: "/days/day2.jpg" },
+  { num: "03", title: "Como comprar Bitcoin sem expor seus dados", desc: "O método P2P direto, sem selfie, sem documento, sem deixar rastro ligando sua identidade às suas moedas.", img: "/days/day3.jpg" },
+  { num: "04", title: "Self-custody — configure sua cold wallet em 30 min", desc: "Passo a passo prático, air-gapped, backup em metal. Seu cofre pessoal saindo hoje.", img: "/days/day4.jpg" },
+  { num: "05", title: "O fluxo completo — soberania Bitcoin em 5 passos", desc: "Compra privada → cold wallet → backup → verificação → uso real. O sistema fechado do começo ao fim.", img: "/days/day5.jpg" },
 ];
 
 const FAQS = [
@@ -126,18 +126,46 @@ export default function Home() {
           </div>
 
           {/* CTA */}
-          <a href="#start" className="text-[12px] font-semibold border border-[#c8913a] text-[#c8913a] px-5 py-[7px] rounded-full hover:bg-[#c8913a] hover:text-black transition-all">
+          <a
+            href="#start"
+            className="text-[12px] font-semibold text-white px-5 py-[9px] rounded-[10px] transition-all hover:brightness-125"
+            style={{ background: "#1a1a1a", border: "1px solid #2a2a2a" }}
+          >
             Quero o Curso
           </a>
         </div>
       </nav>
 
       {/* ──────────── HERO ──────────── */}
-      <section className="relative pt-[56px] overflow-hidden" id="start">
-        {/* Background: perspective grid */}
-        <div className="absolute inset-0 z-0">
-          <Image src="/assets/hero-bg.png" alt="" fill className="object-cover" style={{ opacity: 0.55 }} priority />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(14,14,14,0.1) 0%, rgba(14,14,14,0.4) 50%, rgba(14,14,14,1) 100%)" }} />
+      <section className="relative pt-[56px] overflow-hidden" id="start" style={{ background: "#0e0e0e" }}>
+        {/* Background: perspective grid — opacity baixa pra manter o fundo uniforme escuro */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          {/* Grid em perspectiva — object-contain pra não cortar nem fazer zoom excessivo */}
+          <Image
+            src="/assets/hero-bg.png"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-contain object-center"
+            style={{ opacity: 0.22, mixBlendMode: "screen" }}
+            priority
+          />
+          {/* Vinheta radial — escurece bordas e uniformiza a iluminação */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 110% 80% at 50% 55%, rgba(14,14,14,0) 0%, rgba(14,14,14,0.45) 65%, rgba(14,14,14,0.92) 100%)",
+            }}
+          />
+          {/* Fade pro bottom pra encostar na seção seguinte */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-[120px]"
+            style={{
+              background:
+                "linear-gradient(to bottom, rgba(14,14,14,0) 0%, rgba(14,14,14,1) 100%)",
+            }}
+          />
         </div>
 
         <div className="relative z-10 max-w-[1120px] mx-auto px-8 pt-[80px] pb-[60px] md:pt-[120px] md:pb-[80px]">
@@ -163,13 +191,20 @@ export default function Home() {
 
             {/* Right: Form card + Alfred */}
             <div className="relative w-full max-w-[380px]">
-              {/* Alfred — positioned between text and form, overlapping card from the left */}
-              <div className="absolute -left-[70px] bottom-0 w-[160px] z-30 pointer-events-none hidden md:block">
-                <Image src="/assets/alfred.png" alt="Alfred" width={160} height={200} className="drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]" unoptimized />
+              {/* Alfred — atrás do card, metade esquerda aparecendo (z-0) */}
+              <div className="absolute -left-[120px] bottom-[-20px] w-[200px] z-0 pointer-events-none hidden md:block">
+                <Image
+                  src="/assets/alfred.png"
+                  alt="Alfred"
+                  width={200}
+                  height={260}
+                  className="drop-shadow-[0_12px_32px_rgba(0,0,0,0.7)]"
+                  unoptimized
+                />
               </div>
 
-              {/* Form card */}
-              <div className="relative rounded-[20px] overflow-hidden" style={{ background: "#161616", border: "1px solid #222" }}>
+              {/* Form card — z-10 pra ficar na frente do Alfred */}
+              <div className="relative z-10 rounded-[20px] overflow-hidden" style={{ background: "#161616", border: "1px solid #222" }}>
                 {/* Curved dark shape inside card (top area) */}
                 <div className="absolute inset-0 overflow-hidden rounded-[20px]">
                   <Image src="/assets/form-bg.png" alt="" fill className="object-cover opacity-25" />
