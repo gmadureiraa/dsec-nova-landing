@@ -130,21 +130,35 @@ async function submitViaRD(values: {
   if (values.phone) setNativeValue(phoneInput, values.phone, "phone");
   if (values.name) setNativeValue(nameInput, values.name, "name");
 
-  const submitBtn = rdForm.querySelector<HTMLButtonElement>(
-    'button[type="submit"], input[type="submit"]',
+  // Fetch direto pro action do form — não depende do botão (que pode ainda
+  // não ter sido montado pela lib do RD). O FormData herda todos os hidden
+  // inputs (token_rdstation, conversion_identifier, internal_source, etc).
+  const action = rdForm.action || "https://cta-redirect.rdstation.com/v2/conversions";
+  const formData = new FormData(rdForm);
+  formData.set("email", values.email);
+  if (values.phone) formData.set("mobile_phone", values.phone);
+  if (values.name) formData.set("name", values.name);
+
+  log(
+    "SUBMIT 5. disparando fetch POST pro RD em:",
+    action,
+    "campos:",
+    Array.from(formData.keys()),
   );
-  log("SUBMIT 5. botão submit encontrado?", !!submitBtn, submitBtn?.outerHTML?.slice(0, 120));
-  if (submitBtn) {
-    log("SUBMIT 6. clicando no botão submit do form RD agora");
-    submitBtn.click();
-  } else if (typeof rdForm.requestSubmit === "function") {
-    log("SUBMIT 6. sem botão; chamando rdForm.requestSubmit()");
-    rdForm.requestSubmit();
-  } else {
-    log("SUBMIT 6. fallback rdForm.submit()");
-    rdForm.submit();
+  try {
+    const resp = await fetch(action, {
+      method: "POST",
+      body: formData,
+      mode: "no-cors",
+      credentials: "omit",
+      keepalive: true,
+    });
+    log("SUBMIT 6. fetch OK — status:", resp.status, "type:", resp.type);
+  } catch (err) {
+    console.error("[RD] SUBMIT 6. ❌ fetch throw:", err);
+    return false;
   }
-  log("SUBMIT 7. submit disparado — verifique a aba Network por request pra rdstation.com.br");
+  log("SUBMIT 7. submit concluído — confira Contatos no RD Station");
   return true;
 }
 
