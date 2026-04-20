@@ -111,12 +111,17 @@ export default function Home() {
       <nav className="fixed top-0 inset-x-0 z-50 border-b border-[#1f1f1f]" style={{ background: "rgba(14,14,14,0.85)", backdropFilter: "blur(20px)" }}>
         <div className="max-w-[1120px] mx-auto px-8 h-[56px] flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-1.5">
-            <div className="w-[18px] h-[18px] bg-[#c8913a] rounded-[3px] flex items-center justify-center">
-              <span className="text-[9px] font-black text-black leading-none">D</span>
-            </div>
-            <span className="text-[13px] font-bold tracking-[0.08em] text-white">SEC LABS</span>
-          </div>
+          <a href="#" className="flex items-center">
+            <Image
+              src="/assets/dsec-logo.png"
+              alt="DSEC Labs"
+              width={140}
+              height={28}
+              className="h-[22px] w-auto"
+              priority
+              unoptimized
+            />
+          </a>
 
           {/* Center links */}
           <div className="hidden md:flex items-center gap-7 text-[13px] text-[#888]">
@@ -335,12 +340,14 @@ export default function Home() {
       {/* ──────────── FOOTER ──────────── */}
       <footer className="border-t border-[#1f1f1f] py-[28px]" style={{ background: "#0e0e0e" }}>
         <div className="max-w-[1120px] mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-1.5">
-            <div className="w-[14px] h-[14px] bg-[#c8913a] rounded-[2px] flex items-center justify-center">
-              <span className="text-[7px] font-black text-black leading-none">D</span>
-            </div>
-            <span className="text-[11px] font-bold tracking-[0.08em] text-white">SEC LABS</span>
-          </div>
+          <Image
+            src="/assets/dsec-logo.png"
+            alt="DSEC Labs"
+            width={110}
+            height={22}
+            className="h-[18px] w-auto opacity-80"
+            unoptimized
+          />
           <div className="flex gap-6 text-[12px] text-[#666]">
             {["Youtube", "Instagram", "Alfredp2p", "Discord", "Telegram"].map(l => (
               <a key={l} href="#" className="hover:text-white transition-colors">{l}</a>
