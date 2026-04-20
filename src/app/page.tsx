@@ -1,7 +1,107 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+
+/* ═══════════════════════════════════════════════════════════════════
+   RD STATION FORMS — embed oficial em container oculto
+   Estratégia: o script renderiza o form real em #RD_FORM_ID fora da tela;
+   nosso form custom, ao submeter, preenche os inputs do form RD e clica
+   no botão de submit dele. Garante captura real sem usar token exposto.
+   ═══════════════════════════════════════════════════════════════════ */
+
+const RD_FORM_ID = "forms-captura-leads-x-c92b969c120bb9b7290a";
+
+declare global {
+  interface Window {
+    RDStationForms?: new (id: string, token: string) => { createForm: () => void };
+  }
+}
+
+function useRDStationEmbed() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const ensureForm = () => {
+      const container = document.getElementById(RD_FORM_ID);
+      if (!container || container.querySelector("form")) return;
+      if (window.RDStationForms) {
+        new window.RDStationForms(RD_FORM_ID, "").createForm();
+      }
+    };
+    if (window.RDStationForms) {
+      ensureForm();
+      return;
+    }
+    if (document.getElementById("rdstation-forms-script")) return;
+    const s = document.createElement("script");
+    s.id = "rdstation-forms-script";
+    s.src = "https://d335luupugsy2.cloudfront.net/js/rdstation-forms/stable/rdstation-forms.min.js";
+    s.async = true;
+    s.onload = () => {
+      try {
+        ensureForm();
+      } catch (err) {
+        console.error("[RD] create form failed:", err);
+      }
+    };
+    document.head.appendChild(s);
+  }, []);
+}
+
+async function submitViaRD(values: {
+  email: string;
+  phone?: string;
+  name?: string;
+}): Promise<boolean> {
+  const deadline = Date.now() + 6000;
+  let rdForm: HTMLFormElement | null = null;
+  while (Date.now() < deadline) {
+    const container = document.getElementById(RD_FORM_ID);
+    rdForm = container?.querySelector("form") ?? null;
+    if (rdForm) break;
+    await new Promise((r) => setTimeout(r, 120));
+  }
+  if (!rdForm) {
+    console.error("[RD] form embed não montou em 6s");
+    return false;
+  }
+
+  const setNativeValue = (el: HTMLInputElement | null, val: string) => {
+    if (!el) return;
+    const proto = Object.getPrototypeOf(el) as typeof HTMLInputElement.prototype;
+    const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+    setter?.call(el, val);
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+    el.dispatchEvent(new Event("blur", { bubbles: true }));
+  };
+
+  const emailInput = rdForm.querySelector<HTMLInputElement>(
+    'input[name="email"], input[type="email"]',
+  );
+  const phoneInput = rdForm.querySelector<HTMLInputElement>(
+    'input[name="celular"], input[name="mobile_phone"], input[name="whatsapp"], input[name="telefone"], input[type="tel"]',
+  );
+  const nameInput = rdForm.querySelector<HTMLInputElement>(
+    'input[name="nome"], input[name="name"], input[name="first_name"]',
+  );
+
+  setNativeValue(emailInput, values.email);
+  if (values.phone) setNativeValue(phoneInput, values.phone);
+  if (values.name) setNativeValue(nameInput, values.name);
+
+  const submitBtn = rdForm.querySelector<HTMLButtonElement>(
+    'button[type="submit"], input[type="submit"]',
+  );
+  if (submitBtn) {
+    submitBtn.click();
+  } else if (typeof rdForm.requestSubmit === "function") {
+    rdForm.requestSubmit();
+  } else {
+    rdForm.submit();
+  }
+  return true;
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    DATA
@@ -30,53 +130,71 @@ const FAQS = [
 function EmailForm() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading">("idle");
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setStatus("loading");
-    const f = document.createElement("form");
-    f.method = "POST";
-    f.action = "https://app.rdstation.com.br/api/1.2/conversions";
-    f.target = "rd-iframe-nova";
-    f.style.display = "none";
-    const fields: Record<string, string> = {
-      token_rdstation: "null",
-      identificador: "forms-captura-leads-x-c92b969c120bb9b7290a",
-      email, celular: phone, c_utmz: "", traffic_source: document.referrer || "",
-    };
-    Object.entries(fields).forEach(([k, v]) => {
-      const i = document.createElement("input");
-      i.type = "hidden"; i.name = k; i.value = v;
-      f.appendChild(i);
-    });
-    document.body.appendChild(f);
-    f.submit();
-    document.body.removeChild(f);
-    setTimeout(() => { window.location.href = "/obrigado"; }, 800);
+    const ok = await submitViaRD({ email, phone });
+    if (!ok) {
+      setStatus("error");
+      return;
+    }
+    setTimeout(() => {
+      window.location.href = "/obrigado";
+    }, 1600);
   };
 
-  const inputCls = "w-full px-4 py-3 bg-[#0a0a0a] border-b border-[#333] text-[14px] text-white placeholder:text-[#555] focus:outline-none focus:border-[#c8913a] transition-colors";
+  const inputCls =
+    "w-full px-4 py-3 bg-[#0a0a0a] border-b border-[#333] text-[14px] text-white placeholder:text-[#555] focus:outline-none focus:border-[#c8913a] transition-colors";
 
   return (
-    <>
-      <iframe name="rd-iframe-nova" ref={iframeRef} className="hidden" />
-      <form onSubmit={handleSubmit} className="space-y-5 w-full">
-        <div>
-          <label className="block text-[11px] text-[#777] mb-2 tracking-wide">E-mail</label>
-          <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="+60.000" required disabled={status === "loading"} className={inputCls + " disabled:opacity-50"} />
-        </div>
-        <div>
-          <label className="block text-[11px] text-[#777] mb-2 tracking-wide">WhatsApp</label>
-          <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+55 021 987899372" className={inputCls} />
-        </div>
-        <button type="submit" disabled={status === "loading"} className="w-full mt-2 py-3.5 bg-[#c8913a] text-black text-[14px] font-bold rounded-lg hover:brightness-110 transition-all cursor-pointer disabled:opacity-70 flex items-center justify-center gap-2">
-          {status === "loading" ? "Enviando..." : (<>Enviar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>)}
-        </button>
-      </form>
-    </>
+    <form onSubmit={handleSubmit} className="space-y-5 w-full">
+      <div>
+        <label className="block text-[11px] text-[#777] mb-2 tracking-wide">E-mail</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="seu@email.com"
+          required
+          disabled={status === "loading"}
+          className={inputCls + " disabled:opacity-50"}
+        />
+      </div>
+      <div>
+        <label className="block text-[11px] text-[#777] mb-2 tracking-wide">WhatsApp</label>
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="+55 21 98789 9372"
+          className={inputCls}
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={status === "loading"}
+        className="w-full mt-2 py-3.5 bg-[#c8913a] text-black text-[14px] font-bold rounded-lg hover:brightness-110 transition-all cursor-pointer disabled:opacity-70 flex items-center justify-center gap-2"
+      >
+        {status === "loading" ? (
+          "Enviando..."
+        ) : (
+          <>
+            Enviar{" "}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </>
+        )}
+      </button>
+      {status === "error" && (
+        <p className="text-[11px] text-red-400 text-center">
+          Não conseguimos enviar. Recarregue a página e tente novamente.
+        </p>
+      )}
+    </form>
   );
 }
 
@@ -104,8 +222,25 @@ function FaqItem({ q, a }: { q: string; a: string }) {
    ═══════════════════════════════════════════════════════════════════ */
 
 export default function Home() {
+  useRDStationEmbed();
   return (
     <main className="min-h-screen" style={{ background: "#0e0e0e", color: "#e8e8e8" }}>
+      {/* RD Station — form oficial renderizado fora da tela. O form custom
+          dispara o submit programaticamente em submitViaRD(). */}
+      <div
+        id={RD_FORM_ID}
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          top: "-9999px",
+          width: 1,
+          height: 1,
+          overflow: "hidden",
+          opacity: 0,
+          pointerEvents: "none",
+        }}
+      />
 
       {/* ──────────── NAV ──────────── */}
       <nav className="fixed top-0 inset-x-0 z-50 border-b border-[#1f1f1f]" style={{ background: "rgba(14,14,14,0.85)", backdropFilter: "blur(20px)" }}>
