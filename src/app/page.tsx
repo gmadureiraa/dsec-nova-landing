@@ -319,8 +319,22 @@ export default function Home() {
 
           {/* Center links */}
           <div className="hidden md:flex items-center gap-7 text-[13px] text-[#888]">
-            {["Youtube", "Instagram", "Alfredp2p", "X", "Tiktok", "Telegram"].map(l => (
-              <a key={l} href="#" className="hover:text-white transition-colors">{l}</a>
+            {[
+              { label: "Youtube", href: "#" }, // TODO: adicionar link
+              { label: "Alfredp2p", href: "#" }, // TODO: adicionar link
+              { label: "X", href: "https://x.com/AlfredSpaceHQ" },
+              { label: "Tiktok", href: "#" }, // TODO: adicionar link
+              { label: "Telegram", href: "#" }, // TODO: adicionar link
+            ].map(l => (
+              <a
+                key={l.label}
+                href={l.href}
+                target={l.href.startsWith("http") ? "_blank" : undefined}
+                rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="hover:text-white transition-colors"
+              >
+                {l.label}
+              </a>
             ))}
           </div>
 
@@ -543,8 +557,21 @@ export default function Home() {
             unoptimized
           />
           <div className="flex gap-6 text-[12px] text-[#666]">
-            {["Youtube", "Instagram", "Alfredp2p", "Discord", "Telegram"].map(l => (
-              <a key={l} href="#" className="hover:text-white transition-colors">{l}</a>
+            {[
+              { label: "Youtube", href: "#" }, // TODO: adicionar link
+              { label: "Alfredp2p", href: "#" }, // TODO: adicionar link
+              { label: "Discord", href: "#" }, // TODO: adicionar link
+              { label: "Telegram", href: "#" }, // TODO: adicionar link
+            ].map(l => (
+              <a
+                key={l.label}
+                href={l.href}
+                target={l.href.startsWith("http") ? "_blank" : undefined}
+                rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="hover:text-white transition-colors"
+              >
+                {l.label}
+              </a>
             ))}
           </div>
           <p className="text-[11px] text-[#555]">© 2026 DSEC Labs. No Trust. Do It Yourself.</p>
