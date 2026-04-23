@@ -168,7 +168,7 @@ export default function Home() {
                   <Image src="/assets/form-bg.png" alt="" fill className="object-cover opacity-25" />
                 </div>
                 <div className="relative z-10 px-7 py-8">
-                  <RDForm className="rd-form-styled" />
+                  <RDForm />
                 </div>
               </div>
             </div>
