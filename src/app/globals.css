@@ -41,3 +41,221 @@ html { scroll-behavior: smooth; }
 .delay-2 { animation-delay: 0.2s; }
 .delay-3 { animation-delay: 0.3s; }
 .delay-4 { animation-delay: 0.4s; }
+
+/* ── RD Station Form — override pra combinar com identidade D-Sec ── */
+
+.rd-form-styled,
+.rd-form-styled *,
+.rd-form-styled *::before,
+.rd-form-styled *::after {
+  font-family: inherit !important;
+  box-sizing: border-box !important;
+  color-scheme: dark !important;
+}
+
+.rd-form-styled .bricks-form,
+.rd-form-styled form,
+.rd-form-styled > div,
+.rd-form-styled > div > div {
+  background: transparent !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  max-width: 100% !important;
+  border-radius: 0 !important;
+}
+
+.rd-form-styled .bricks-form__fieldset,
+.rd-form-styled fieldset {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.rd-form-styled .bricks-form__wrapper,
+.rd-form-styled [class*="wrapper"],
+.rd-form-styled [class*="container"] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* Hide phone flag selector */
+.rd-form-styled .iti__flag-container,
+.rd-form-styled .iti__selected-flag,
+.rd-form-styled .iti__country-list {
+  display: none !important;
+}
+.rd-form-styled .iti {
+  width: 100% !important;
+}
+.rd-form-styled .iti input,
+.rd-form-styled .iti input[type="tel"] {
+  padding-left: 16px !important;
+}
+
+/* Labels */
+.rd-form-styled .bricks-form__label,
+.rd-form-styled label {
+  color: #777 !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  margin-bottom: 6px !important;
+  display: block !important;
+  letter-spacing: 0.04em !important;
+  text-transform: none !important;
+}
+
+/* Inputs */
+.rd-form-styled .bricks-form__input,
+.rd-form-styled input:not([type="submit"]):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.rd-form-styled select,
+.rd-form-styled textarea {
+  background: #0a0a0a !important;
+  border: none !important;
+  border-bottom: 1px solid #333 !important;
+  border-radius: 0 !important;
+  color: #fff !important;
+  padding: 12px 0 !important;
+  font-size: 14px !important;
+  font-family: inherit !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  transition: border-color 0.2s !important;
+  outline: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  line-height: 1.4 !important;
+  height: auto !important;
+  min-height: 44px !important;
+}
+
+.rd-form-styled input:focus,
+.rd-form-styled select:focus,
+.rd-form-styled textarea:focus {
+  border-bottom-color: #c8913a !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.rd-form-styled input::placeholder,
+.rd-form-styled textarea::placeholder {
+  color: #555 !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #555 !important;
+}
+
+/* Chrome autofill */
+.rd-form-styled input:-webkit-autofill,
+.rd-form-styled input:-webkit-autofill:hover,
+.rd-form-styled input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #0a0a0a inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+}
+
+/* Submit button */
+.rd-form-styled .bricks-form__submit,
+.rd-form-styled button[type="submit"],
+.rd-form-styled input[type="submit"],
+.rd-form-styled form button {
+  background: #c8913a !important;
+  color: #000 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 14px 22px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  font-family: inherit !important;
+  cursor: pointer !important;
+  width: 100% !important;
+  transition: filter 0.15s !important;
+  margin-top: 10px !important;
+  min-height: 48px !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+  -webkit-appearance: none !important;
+  box-shadow: none !important;
+}
+
+.rd-form-styled button[type="submit"]:hover,
+.rd-form-styled input[type="submit"]:hover,
+.rd-form-styled form button:hover {
+  filter: brightness(1.1) !important;
+  background: #c8913a !important;
+}
+
+/* Field spacing */
+.rd-form-styled .bricks-form__field,
+.rd-form-styled .bricks-form__field-container {
+  margin-bottom: 18px !important;
+  padding: 0 !important;
+}
+
+/* Checkbox / radio */
+.rd-form-styled input[type="checkbox"],
+.rd-form-styled input[type="radio"] {
+  accent-color: #c8913a !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-height: auto !important;
+}
+
+.rd-form-styled .bricks-form__checkbox-label,
+.rd-form-styled .bricks-form__radio-label {
+  color: #888 !important;
+  font-size: 12px !important;
+}
+
+/* Hide RD branding / footers */
+.rd-form-styled .bricks-form__footer,
+.rd-form-styled .bricks-form__footer *,
+.rd-form-styled .rdstation-popup-position,
+.rd-form-styled img[src*="rdstation"],
+.rd-form-styled img[src*="d335luupugsy2"],
+.rd-form-styled a[href*="rdstation"],
+.rd-form-styled [class*="powered"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+/* Success / error */
+.rd-form-styled .bricks-form__success,
+.rd-form-styled [class*="success"] {
+  color: #c8913a !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  padding: 20px 0 !important;
+  font-size: 14px !important;
+}
+
+.rd-form-styled .bricks-form__error,
+.rd-form-styled .bricks-form__field--error input {
+  border-color: #ef4444 !important;
+  border-bottom-color: #ef4444 !important;
+}
+
+.rd-form-styled .bricks-form__error-message {
+  color: #ef4444 !important;
+  font-size: 11px !important;
+  margin-top: 4px !important;
+}
+
+.rd-form-styled .bricks-form__title,
+.rd-form-styled .bricks-form__description,
+.rd-form-styled h1, .rd-form-styled h2, .rd-form-styled h3 {
+  display: none !important;
+}
