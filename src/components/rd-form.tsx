@@ -35,6 +35,7 @@ type SubmitState =
 export function RDForm({ className }: { className?: string }) {
   const hiddenContainerRef = useRef<HTMLDivElement>(null);
   const [rdToken, setRdToken] = useState<string | null>(null);
+  const [rdIdentificador, setRdIdentificador] = useState<string | null>(null);
   const [submitState, setSubmitState] = useState<SubmitState>({
     status: "idle",
   });
@@ -97,11 +98,21 @@ export function RDForm({ className }: { className?: string }) {
 
       const tokenDeadline = Date.now() + 10_000;
       while (Date.now() < tokenDeadline) {
-        const input = hiddenContainerRef.current?.querySelector<HTMLInputElement>(
-          'input[name="token_rdstation"]',
-        );
-        if (input?.value) {
-          setRdToken(input.value);
+        const tokenInput =
+          hiddenContainerRef.current?.querySelector<HTMLInputElement>(
+            'input[name="token_rdstation"]',
+          );
+        const identInput =
+          hiddenContainerRef.current?.querySelector<HTMLInputElement>(
+            'input[name="identificador"], input[name="identifier"], input[name="conversion_identifier"]',
+          );
+        if (tokenInput?.value) {
+          setRdToken(tokenInput.value);
+          // identificador pode ou não estar presente no form RD;
+          // se não vier, caímos no fallback RD_FORM_ID no submit.
+          if (identInput?.value) {
+            setRdIdentificador(identInput.value);
+          }
           return;
         }
         await new Promise((r) => setTimeout(r, 150));
@@ -135,9 +146,13 @@ export function RDForm({ className }: { className?: string }) {
     setSubmitState({ status: "submitting" });
 
     try {
+      // O RD cria contato só se token_rdstation + email forem válidos,
+      // mas só registra CONVERSÃO no form se `identificador` bater com
+      // um form configurado no painel. O `identificador` correto vem no
+      // hidden form que a lib RD injeta. Se não extrair, cai no embed ID.
       const body: Record<string, string> = {
         token_rdstation: rdToken,
-        identificador: RD_FORM_ID,
+        identificador: rdIdentificador ?? RD_FORM_ID,
         email,
       };
       const nome = formData.nome.trim();
@@ -148,6 +163,7 @@ export function RDForm({ className }: { className?: string }) {
         body.traffic_source = window.location.href;
       }
 
+      console.log("[RD] POST body", body);
       const res = await fetch(RD_ENDPOINT, {
         method: "POST",
         headers: {
