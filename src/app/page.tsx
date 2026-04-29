@@ -316,7 +316,7 @@ export default function Home() {
                 show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
               }}
             >
-              <p className="text-[52px] md:text-[60px] font-bold leading-none text-white" style={{ fontFamily: "var(--font-geist-sans)" }}>
+              <p className="text-[52px] md:text-[60px] font-bold leading-none text-white" style={{ fontFamily: "var(--font-space-grotesk)" }}>
                 270<span className="text-[24px] font-bold">mil</span>
               </p>
               <p className="text-[13px] font-bold text-white mt-[4px] mb-[16px]">Clientes com dados vazados</p>
